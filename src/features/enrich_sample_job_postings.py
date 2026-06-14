@@ -153,28 +153,96 @@ def detect_technologies(text: str) -> str:
     return ", ".join(detected)
 
 
-def detect_role_category(text: str) -> str:
-    """Classify job posting into a broad role category."""
-    if any(keyword in text for keyword in ["data engineer", "data analyst", "data scientist", "business intelligence", "bi "]):
+def detect_role_category(row: pd.Series) -> str:
+    """Classify job posting into a broad role category using title-first rules."""
+    title = normalize_text(row.get("title", ""))
+    description = normalize_text(row.get("description", ""))
+    full_text = f"{title} {description}".strip()
+
+    if any(
+        keyword in title
+        for keyword in [
+            "fullstack",
+            "full stack",
+        ]
+    ):
+        return "Fullstack"
+
+    if any(
+        keyword in title
+        for keyword in [
+            "data engineer",
+            "data platform",
+            "data analyst",
+            "data business analyst",
+            "data scientist",
+            "business intelligence",
+            "big data",
+            "bi developer",
+            "database",
+            "data quality",
+            "machine learning",
+            "ml engineer",
+            "ai engineer",
+            "ai systems engineer",
+            "llm engineer",
+            "consultor/a data",
+        ]
+    ):
         return "Data"
 
-    if any(keyword in text for keyword in ["backend", "java developer", "microservicios", "api", "spring"]):
-        return "Backend"
-
-    if any(keyword in text for keyword in ["frontend", "front-end", "react", "angular", "vue"]):
-        return "Frontend"
-
-    if any(keyword in text for keyword in ["devops", "sre", "kubernetes", "docker", "cloud"]):
-        return "DevOps"
-
-    if any(keyword in text for keyword in ["cybersecurity", "ciberseguridad", "security", "soc"]):
-        return "Cybersecurity"
-
-    if any(keyword in text for keyword in ["qa", "tester", "testing", "quality assurance"]):
+    if re.search(r"\b(qa|tester|testing|pruebas|quality assurance)\b", title) or "analista de pruebas" in title:
         return "QA"
 
-    if any(keyword in text for keyword in ["sistemas", "systems", "sysadmin", "network", "redes"]):
+    if re.search(r"\b(sre|devops|platform engineer|observability engineer|site reliability)\b", title):
+        return "DevOps"
+
+    if any(
+        keyword in title
+        for keyword in [
+            "cybersecurity",
+            "ciberseguridad",
+            "security analyst",
+            "sap security",
+            "data security",
+            "security specialist",
+        ]
+    ):
+        return "Cybersecurity"
+
+    if re.search(r"\b(frontend|front-end|react|angular|vue)\b", title):
+        return "Frontend"
+
+    if any(
+        keyword in title
+        for keyword in [
+            "backend",
+            "java developer",
+            "developer",
+            "desarrollador",
+            "programador",
+            "software engineer",
+            "ingeniero/a de software",
+            "spring",
+            "microservicios",
+        ]
+    ):
+        return "Backend"
+
+    if re.search(r"\b(sistemas|systems|sysadmin|network|redes)\b", title):
         return "Systems"
+
+    if any(keyword in title for keyword in ["business analyst", "operational support", "gerente de cuentas", "key account"]):
+        return "Other"
+
+    if any(keyword in full_text for keyword in ["data scientist", "data engineer", "business intelligence"]):
+        return "Data"
+
+    if any(keyword in full_text for keyword in ["devops", "site reliability engineer"]):
+        return "DevOps"
+
+    if any(keyword in full_text for keyword in ["cybersecurity", "ciberseguridad"]):
+        return "Cybersecurity"
 
     return "Other"
 
@@ -213,7 +281,7 @@ def enrich_job_postings(df: pd.DataFrame) -> pd.DataFrame:
     enriched["work_mode"] = search_text.apply(detect_work_mode)
     enriched["seniority"] = search_text.apply(detect_seniority)
     enriched["technologies_detected"] = search_text.apply(detect_technologies)
-    enriched["role_category"] = search_text.apply(detect_role_category)
+    enriched["role_category"] = enriched.apply(detect_role_category, axis=1)
     enriched["processed_at_utc"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     return enriched
