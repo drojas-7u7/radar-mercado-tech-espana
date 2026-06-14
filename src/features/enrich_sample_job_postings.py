@@ -8,8 +8,9 @@ from pathlib import Path
 import pandas as pd
 
 
-INPUT_PATH = Path("data/interim/sample_job_postings.csv")
-OUTPUT_PATH = Path("data/processed/sample_job_postings_enriched.csv")
+INPUT_PATH = Path("data/interim/job_postings_sample.csv")
+OUTPUT_PATH = Path("data/processed/job_postings_sample_enriched.csv")
+MIN_DATE_POSTED = "2026-01-01"
 
 
 TECHNOLOGY_KEYWORDS = {
@@ -193,6 +194,13 @@ def normalize_country(row: pd.Series) -> str:
     return ""
 
 
+def filter_recent_job_postings(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep only job postings published from the configured minimum date."""
+    dates = pd.to_datetime(df["date_posted"], errors="coerce")
+    min_date = pd.Timestamp(MIN_DATE_POSTED)
+    return df[dates >= min_date].copy()
+
+
 def enrich_job_postings(df: pd.DataFrame) -> pd.DataFrame:
     """Add derived fields to job postings."""
     enriched = df.copy()
@@ -216,12 +224,15 @@ def main() -> None:
         raise FileNotFoundError(f"Input dataset not found: {INPUT_PATH}")
 
     df = pd.read_csv(INPUT_PATH)
-    enriched = enrich_job_postings(df)
+    filtered = filter_recent_job_postings(df)
+    enriched = enrich_job_postings(filtered)
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     enriched.to_csv(OUTPUT_PATH, index=False)
 
     print(f"Loaded rows: {len(df)}")
+    print(f"Rows after date filter >= {MIN_DATE_POSTED}: {len(filtered)}")
+    print(f"Rows removed by date filter: {len(df) - len(filtered)}")
     print(f"Saved enriched dataset to: {OUTPUT_PATH}")
     print()
     print(
