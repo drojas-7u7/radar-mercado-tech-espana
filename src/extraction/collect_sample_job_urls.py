@@ -18,7 +18,6 @@ HEADERS = {
 
 OUTPUT_PATH = Path("data/interim/sample_job_urls.csv")
 
-MAX_URLS_PER_SOURCE = 10
 
 PRIORITY_KEYWORDS = [
     "data",
@@ -40,6 +39,7 @@ class SourceConfig:
     name: str
     sitemap_url: str
     job_url_marker: str
+    max_urls: int
 
 
 SOURCES = [
@@ -47,11 +47,13 @@ SOURCES = [
         name="Tecnoempleo",
         sitemap_url="https://www.tecnoempleo.com/sitemap.xml",
         job_url_marker="rf-",
+        max_urls=80,
     ),
     SourceConfig(
         name="Ticjob",
         sitemap_url="https://www.ticjob.es/esp/sitemap.xml",
         job_url_marker="/esp/trabajo/",
+        max_urls=20,
     ),
 ]
 
@@ -121,10 +123,11 @@ def main() -> None:
 
             urls = fetch_sitemap_urls(session, source.sitemap_url)
             candidate_rows = build_candidate_rows(source, urls)
-            sample_rows = select_sample(candidate_rows, MAX_URLS_PER_SOURCE)
+            sample_rows = select_sample(candidate_rows, source.max_urls)
 
             print(f"Total sitemap URLs: {len(urls)}")
             print(f"Likely job URLs: {len(candidate_rows)}")
+            print(f"Configured sample limit: {source.max_urls}")
             print(f"Selected sample URLs: {len(sample_rows)}")
 
             selected_rows.extend(sample_rows)

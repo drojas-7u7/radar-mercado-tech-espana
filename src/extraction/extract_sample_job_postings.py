@@ -82,6 +82,12 @@ def extract_salary_from_description(description: str) -> tuple[int | None, int |
         if match:
             salary_min = parse_salary_number(match.group(1))
             salary_max = parse_salary_number(match.group(2))
+
+            # Some job postings abbreviate the lower bound in salary ranges.
+            # Example: "24 - 28.000 EUR" means 24000 - 28000 EUR.
+            if salary_min < 1000 and salary_max >= 10000:
+                salary_min *= 1000
+
             salary_avg = round((salary_min + salary_max) / 2, 2)
             return salary_min, salary_max, salary_avg, "published_in_offer"
 
