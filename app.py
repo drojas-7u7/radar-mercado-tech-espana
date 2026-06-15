@@ -264,13 +264,39 @@ def render_timeline_chart(df: pd.DataFrame) -> None:
 
 
 def render_salary_section(df: pd.DataFrame) -> None:
-    """Render salary analysis with limitations."""
-    st.subheader("Salarios publicados")
+    """Render salary transparency analysis with limitations."""
+    st.subheader("Transparencia salarial")
+
+    total_offers = len(df)
 
     salary_df = df[
         (df["salary_data_type"] == "published_in_offer")
         & (df["salary_offer_avg"].notna())
     ].copy()
+
+    salary_available = len(salary_df)
+    salary_missing = max(total_offers - salary_available, 0)
+    transparency_rate = (
+        (salary_available / total_offers) * 100
+        if total_offers > 0
+        else 0
+    )
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Ofertas filtradas", f"{total_offers}")
+    col2.metric("Con salario publicado", f"{salary_available}")
+    col3.metric("Transparencia salarial", f"{transparency_rate:.1f}%")
+
+    st.info(
+        f"""
+        En la muestra filtrada, **{salary_available} de {total_offers} ofertas**
+        publican un salario utilizable. Las otras **{salary_missing} ofertas**
+        no permiten calcular un salario medio ofertado.
+
+        Por eso, esta sección mide principalmente la **transparencia salarial**
+        de las ofertas, no el salario real del mercado tecnológico.
+        """
+    )
 
     if salary_df.empty:
         st.warning("No hay salarios publicados con los filtros actuales.")
@@ -278,8 +304,8 @@ def render_salary_section(df: pd.DataFrame) -> None:
 
     st.warning(
         """
-        La mayoría de ofertas no publica salario. Por tanto, este bloque debe leerse como una muestra parcial,
-        no como una estimación salarial representativa del mercado.
+        El gráfico siguiente solo usa ofertas con salario publicado explícitamente.
+        Debe leerse como una muestra parcial, no como una estimación salarial representativa del mercado.
         """
     )
 
