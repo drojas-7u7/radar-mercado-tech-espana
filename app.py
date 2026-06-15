@@ -7,7 +7,7 @@ import plotly.express as px
 import streamlit as st
 
 
-DATA_PATH = Path("data/processed/job_postings_sample_enriched.csv")
+DATA_PATH = Path("data/processed/job_postings_enriched.csv")
 
 
 def configure_page() -> None:
