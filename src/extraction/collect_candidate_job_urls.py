@@ -16,7 +16,9 @@ HEADERS = {
     )
 }
 
-OUTPUT_PATH = Path("data/interim/sample_job_urls.csv")
+RAW_DIR = Path("data/raw")
+INTERIM_DIR = Path("data/interim")
+COMBINED_OUTPUT_PATH = INTERIM_DIR / "job_urls.csv"
 
 
 PRIORITY_KEYWORDS = [
@@ -37,23 +39,23 @@ PRIORITY_KEYWORDS = [
 @dataclass(frozen=True)
 class SourceConfig:
     name: str
+    slug: str
     sitemap_url: str
     job_url_marker: str
-    max_urls: int
 
 
 SOURCES = [
     SourceConfig(
         name="Tecnoempleo",
+        slug="tecnoempleo",
         sitemap_url="https://www.tecnoempleo.com/sitemap.xml",
         job_url_marker="rf-",
-        max_urls=80,
     ),
     SourceConfig(
         name="Ticjob",
+        slug="ticjob",
         sitemap_url="https://www.ticjob.es/esp/sitemap.xml",
         job_url_marker="/esp/trabajo/",
-        max_urls=20,
     ),
 ]
 
@@ -79,7 +81,7 @@ def get_matched_keywords(url: str) -> list[str]:
 
 
 def build_candidate_rows(source: SourceConfig, urls: list[str]) -> list[dict[str, Any]]:
-    """Build candidate job URL rows from sitemap URLs."""
+    """Build all candidate job URL rows from sitemap URLs."""
     rows = []
 
     for position, url in enumerate(urls, start=1):
@@ -91,6 +93,7 @@ def build_candidate_rows(source: SourceConfig, urls: list[str]) -> list[dict[str
         rows.append(
             {
                 "source": source.name,
+                "source_slug": source.slug,
                 "url": url,
                 "sitemap_url": source.sitemap_url,
                 "sitemap_position": position,
@@ -102,18 +105,21 @@ def build_candidate_rows(source: SourceConfig, urls: list[str]) -> list[dict[str
     return rows
 
 
-def select_sample(rows: list[dict[str, Any]], max_urls: int) -> list[dict[str, Any]]:
-    """Select a reproducible sample prioritizing relevant keyword matches."""
-    sorted_rows = sorted(
-        rows,
-        key=lambda row: (-row["keyword_score"], row["sitemap_position"]),
-    )
+def save_source_raw_urls(source: SourceConfig, rows: list[dict[str, Any]]) -> Path:
+    """Save raw candidate URL inventory for one source."""
+    output_path = RAW_DIR / f"{source.slug}_candidate_urls.csv"
 
-    return sorted_rows[:max_urls]
+    df_source = pd.DataFrame(rows)
+    df_source.to_csv(output_path, index=False)
+
+    return output_path
 
 
 def main() -> None:
-    selected_rows = []
+    all_candidate_rows = []
+
+    RAW_DIR.mkdir(parents=True, exist_ok=True)
+    INTERIM_DIR.mkdir(parents=True, exist_ok=True)
 
     with requests.Session() as session:
         for source in SOURCES:
@@ -123,24 +129,36 @@ def main() -> None:
 
             urls = fetch_sitemap_urls(session, source.sitemap_url)
             candidate_rows = build_candidate_rows(source, urls)
-            sample_rows = select_sample(candidate_rows, source.max_urls)
+
+            raw_output_path = save_source_raw_urls(source, candidate_rows)
 
             print(f"Total sitemap URLs: {len(urls)}")
             print(f"Likely job URLs: {len(candidate_rows)}")
-            print(f"Configured sample limit: {source.max_urls}")
-            print(f"Selected sample URLs: {len(sample_rows)}")
+            print(f"Saved raw candidate URLs to: {raw_output_path}")
 
-            selected_rows.extend(sample_rows)
+            all_candidate_rows.extend(candidate_rows)
 
-    df = pd.DataFrame(selected_rows)
+    df_combined = pd.DataFrame(all_candidate_rows)
 
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(OUTPUT_PATH, index=False)
+    if not df_combined.empty:
+        df_combined = df_combined.sort_values(
+            by=["source", "keyword_score", "sitemap_position"],
+            ascending=[True, False, True],
+        )
+
+    df_combined.to_csv(COMBINED_OUTPUT_PATH, index=False)
 
     print()
-    print(f"Saved sample job URLs to: {OUTPUT_PATH}")
-    print()
-    print(df[["source", "url", "matched_keywords", "keyword_score"]])
+    print(f"Total candidate job URLs: {len(df_combined)}")
+    print(f"Saved combined candidate URLs to: {COMBINED_OUTPUT_PATH}")
+
+    if not df_combined.empty:
+        print()
+        print("Candidate URLs by source:")
+        print(df_combined["source"].value_counts())
+        print()
+        print("Preview:")
+        print(df_combined[["source", "url", "matched_keywords", "keyword_score"]].head(20))
 
 
 if __name__ == "__main__":
