@@ -8,8 +8,8 @@ from pathlib import Path
 import pandas as pd
 
 
-INPUT_PATH = Path("data/interim/job_postings_sample.csv")
-OUTPUT_PATH = Path("data/processed/job_postings_sample_enriched.csv")
+INPUT_PATH = Path("data/interim/job_postings_normalized.csv")
+OUTPUT_PATH = Path("data/processed/job_postings_enriched.csv")
 MIN_DATE_POSTED = "2026-01-01"
 
 
@@ -168,6 +168,9 @@ def detect_role_category(row: pd.Series) -> str:
     ):
         return "Fullstack"
 
+    if re.search(r"\b(sap|erp|fico|is-u|business central|successfactors)\b", title):
+        return "SAP/ERP"
+
     if any(
         keyword in title
         for keyword in [
@@ -176,17 +179,41 @@ def detect_role_category(row: pd.Series) -> str:
             "data analyst",
             "data business analyst",
             "data scientist",
+            "data analytics",
+            "analytics engineer",
             "business intelligence",
-            "big data",
             "bi developer",
+            "bi specialist",
+            "big data",
             "database",
             "data quality",
+            "data ai",
+            "gobierno del dato",
+            "consultor/a data",
+            "consultor/a de datos",
             "machine learning",
             "ml engineer",
             "ai engineer",
             "ai systems engineer",
+            "ia engineer",
+            "ingeniero/a de ia",
+            "ingeniero/a ia",
+            "ingeniero/a inteligencia artificial",
+            "inteligencia artificial",
+            "artificial intelligence",
+            "generative ai",
+            "genai",
+            "gen ai",
+            "ia generativa",
+            "ai automation",
+            "ai product engineer",
+            "ai specialist",
+            "ai architect",
+            "ai tech lead",
+            "computer vision",
             "llm engineer",
-            "consultor/a data",
+            "langchain",
+            "rag",
         ]
     ):
         return "Data"
@@ -201,11 +228,25 @@ def detect_role_category(row: pd.Series) -> str:
         keyword in title
         for keyword in [
             "cybersecurity",
+            "cyber security",
             "ciberseguridad",
+            "seguridad",
             "security analyst",
+            "security engineer",
+            "security specialist",
             "sap security",
             "data security",
-            "security specialist",
+            "data loss prevention",
+            "dlp",
+            "soc analyst",
+            "soc l1",
+            "soc l2",
+            "soc l3",
+            "grc",
+            "devsecops",
+            "vulnerability",
+            "vulnerabilidad",
+            "riesgo tecnologico",
         ]
     ):
         return "Cybersecurity"
@@ -240,9 +281,6 @@ def detect_role_category(row: pd.Series) -> str:
 
     if any(keyword in full_text for keyword in ["devops", "site reliability engineer"]):
         return "DevOps"
-
-    if any(keyword in full_text for keyword in ["cybersecurity", "ciberseguridad"]):
-        return "Cybersecurity"
 
     return "Other"
 
