@@ -3,10 +3,8 @@ from __future__ import annotations
 import html
 import json
 import re
-from pathlib import Path
 from typing import Any
 
-import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
@@ -17,14 +15,6 @@ HEADERS = {
         "(compatible; radar-mercado-tech-espana/0.1; educational project)"
     )
 }
-
-SAMPLE_URLS = {
-    "Tecnoempleo": "https://www.tecnoempleo.com/senior-data-engineer-ust/tableau-python/rf-065a1b7b922f93526b42",
-    "Ticjob": "https://ticjob.es/esp/trabajo/java-developer-microservicios-ingles-alto-remoto/70577",
-}
-
-OUTPUT_PATH = Path("data/interim/sample_job_postings.csv")
-
 
 def clean_text(value: Any) -> str:
     """Clean HTML entities and repeated whitespace from a text value."""
@@ -170,43 +160,3 @@ def fetch_job_posting(session: requests.Session, source: str, url: str) -> dict[
         raise ValueError(f"No JobPosting JSON-LD found for {url}")
 
     return normalize_job_posting(source, url, job_posting)
-
-
-def main() -> None:
-    rows = []
-
-    with requests.Session() as session:
-        for source, url in SAMPLE_URLS.items():
-            print(f"Extracting sample job from {source}...")
-            row = fetch_job_posting(session, source, url)
-            rows.append(row)
-
-    df = pd.DataFrame(rows)
-
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(OUTPUT_PATH, index=False)
-
-    print()
-    print("Extracted rows:")
-    print(
-        df[
-            [
-                "source",
-                "title",
-                "company",
-                "location_region",
-                "employment_type",
-                "salary_offer_min",
-                "salary_offer_max",
-                "salary_data_type",
-                "date_posted",
-            ]
-        ]
-    )
-
-    print()
-    print(f"Saved sample dataset to: {OUTPUT_PATH}")
-
-
-if __name__ == "__main__":
-    main()

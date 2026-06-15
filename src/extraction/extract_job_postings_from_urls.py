@@ -7,12 +7,12 @@ from typing import Any
 import pandas as pd
 import requests
 
-from extract_sample_job_postings import fetch_job_posting
+from job_posting_extractor import fetch_job_posting
 
 
-INPUT_PATH = Path("data/interim/sample_job_urls.csv")
-OUTPUT_PATH = Path("data/interim/job_postings_sample.csv")
-ERRORS_OUTPUT_PATH = Path("data/interim/job_postings_sample_errors.csv")
+INPUT_PATH = Path("data/interim/job_urls.csv")
+OUTPUT_PATH = Path("data/interim/job_postings_normalized.csv")
+ERRORS_OUTPUT_PATH = Path("data/interim/job_postings_extraction_errors.csv")
 
 REQUEST_DELAY_SECONDS = 1.0
 
@@ -61,7 +61,7 @@ def main() -> None:
     if not INPUT_PATH.exists():
         raise FileNotFoundError(
             f"Input file not found: {INPUT_PATH}. "
-            "Run src/extraction/collect_sample_job_urls.py first."
+            "Run src/extraction/collect_candidate_job_urls.py first."
         )
 
     df_urls = pd.read_csv(INPUT_PATH)
@@ -88,7 +88,7 @@ def main() -> None:
 
     if not df_output.empty:
         print()
-        print("Extracted sample:")
+        print("Extracted rows preview:")
         print(
             df_output[
                 [
