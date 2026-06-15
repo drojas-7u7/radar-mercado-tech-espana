@@ -6,6 +6,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from src.processing.dashboard_data import apply_dashboard_filters, load_job_postings_data
+
 
 DATA_PATH = Path("data/processed/job_postings_enriched.csv")
 
@@ -21,12 +23,7 @@ def configure_page() -> None:
 @st.cache_data
 def load_data(path: str) -> pd.DataFrame:
     """Load the processed job postings dataset."""
-    df = pd.read_csv(path)
-
-    df["date_posted"] = pd.to_datetime(df["date_posted"], errors="coerce")
-    df["technologies_detected"] = df["technologies_detected"].fillna("")
-
-    return df
+    return load_job_postings_data(path)
 
 
 def render_header() -> None:
@@ -98,25 +95,7 @@ def render_sidebar_filters(df: pd.DataFrame) -> dict:
 
 def apply_filters(df: pd.DataFrame, filters: dict) -> pd.DataFrame:
     """Apply sidebar filters to the dataset."""
-    filtered = df.copy()
-
-    filtered = filtered[
-        filtered["source"].isin(filters["sources"])
-        & filtered["role_category"].isin(filters["roles"])
-        & filtered["work_mode"].isin(filters["work_modes"])
-        & filtered["seniority"].isin(filters["seniorities"])
-    ]
-
-    date_range = filters["date_range"]
-
-    if isinstance(date_range, tuple) and len(date_range) == 2:
-        start_date, end_date = date_range
-        filtered = filtered[
-            (filtered["date_posted"].dt.date >= start_date)
-            & (filtered["date_posted"].dt.date <= end_date)
-        ]
-
-    return filtered
+    return apply_dashboard_filters(df, filters)
 
 
 def render_kpis(df: pd.DataFrame) -> None:
