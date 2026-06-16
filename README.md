@@ -28,17 +28,15 @@ Estado actual:
 
 Pendiente:
 
-- Despliegue público en la nube.
-- URL pública del dashboard.
 - Validación con usuario real no técnico.
-- Documentación metodológica final en `docs/data_strategy.md`.
+- Preparación de la presentación ejecutiva de 7 minutos.
 
 ## Demo
 
 URL pública del dashboard:
 
 ```text
-Pendiente de despliegue.
+https://radar-mercado-tech-espana-t6vqbotubuzgoswrbxhlt9.streamlit.app/
 ```
 
 Ejecución local:
@@ -443,12 +441,10 @@ La validación final deberá comprobar que una persona externa al desarrollo pue
 
 ## Próximos pasos
 
-* Actualizar `docs/data_strategy.md` con la metodología final.
-* Subir el repositorio a GitHub.
-* Preparar despliegue público.
-* Añadir URL pública al README.
 * Realizar validación con usuario no técnico.
+* Incorporar mejoras si aparecen durante la validación.
 * Preparar presentación ejecutiva de 7 minutos.
+* Revisar README y documentación final antes de la entrega.
 
 ## Autor
 
