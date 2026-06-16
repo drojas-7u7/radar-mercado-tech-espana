@@ -162,3 +162,108 @@ def create_salary_box_chart(salary_df: pd.DataFrame) -> Figure:
             "salary_offer_avg": "Salario medio ofertado",
         },
     )
+
+
+def _simplify_ine_activity_branch(activity_branch: str) -> str:
+    """Create a shorter label for INE activity branches."""
+    if activity_branch == "Total":
+        return "Total nacional"
+
+    replacements = {
+        "J Información y comunicaciones": "Información y comunicaciones",
+        "K Actividades financieras y de seguros": "Finanzas y seguros",
+        "M Actividades profesionales, científicas y técnicas": "Actividades profesionales",
+        "D Suministro de energía eléctrica, gas, vapor y aire acondicionado": "Energía",
+    }
+
+    return replacements.get(activity_branch, activity_branch)
+
+
+def create_ine_salary_context_chart(ine_df: pd.DataFrame) -> Figure | None:
+    """Create INE sector-level salary context chart for the latest year."""
+    context = ine_df[
+        (ine_df["is_latest_year"] == True)
+        & (ine_df["is_total_workday_type"] == True)
+        & (ine_df["is_total_decile"] == True)
+        & (ine_df["is_relevant_context_branch"] == True)
+    ].copy()
+
+    if context.empty:
+        return None
+
+    context["activity_branch_label"] = context["activity_branch"].apply(
+        _simplify_ine_activity_branch
+    )
+
+    context = context.sort_values("salary_monthly_gross_eur", ascending=True)
+
+    fig = px.bar(
+        context,
+        x="salary_monthly_gross_eur",
+        y="activity_branch_label",
+        orientation="h",
+        text="salary_monthly_gross_eur",
+        title="Contexto INE: salario mensual bruto por rama de actividad",
+        labels={
+            "salary_monthly_gross_eur": "Salario mensual bruto (€)",
+            "activity_branch_label": "Rama de actividad",
+        },
+    )
+
+    fig.update_traces(texttemplate="%{text:.0f} €", textposition="outside")
+
+    return fig
+
+
+def create_manfred_salary_reference_chart(manfred_df: pd.DataFrame) -> Figure | None:
+    """Create Manfred tech salary reference chart for selected tech roles."""
+    selected_roles = [
+        "AI Engineer",
+        "Backend",
+        "Data Analyst",
+        "Data Engineer",
+        "Data Scientist",
+        "Frontend",
+        "Full-Stack",
+        "MLOps",
+        "QA & Testing",
+        "SRE/DevOps",
+        "Security/ Cybersecurity Engineer",
+        "SysAdmin",
+    ]
+
+    selected_experience_ranges = [
+        "<2 años",
+        "2-5 años",
+        "5-10 años",
+    ]
+
+    context = manfred_df[
+        (manfred_df["salary_available"] == True)
+        & (manfred_df["role_name"].isin(selected_roles))
+        & (manfred_df["experience_range"].isin(selected_experience_ranges))
+    ].copy()
+
+    if context.empty:
+        return None
+
+    fig = px.bar(
+        context,
+        x="salary_midpoint_eur_year",
+        y="role_name",
+        color="experience_range",
+        barmode="group",
+        title="Referencia Manfred: salario anual por rol tech y experiencia",
+        labels={
+            "salary_midpoint_eur_year": "Salario anual de referencia (€)",
+            "role_name": "Rol",
+            "experience_range": "Experiencia",
+        },
+        category_orders={
+            "experience_range": selected_experience_ranges,
+        },
+    )
+
+    fig.update_layout(yaxis={"categoryorder": "total ascending"})
+
+    return fig
