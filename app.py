@@ -3,10 +3,18 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 
 from src.processing.dashboard_data import apply_dashboard_filters, load_job_postings_data
+from src.visualization.dashboard_charts import (
+    create_role_by_work_mode_chart,
+    create_role_category_chart,
+    create_salary_box_chart,
+    create_seniority_chart,
+    create_technologies_chart,
+    create_timeline_chart,
+    create_work_mode_chart,
+)
 
 
 DATA_PATH = Path("data/processed/job_postings_enriched.csv")
@@ -115,150 +123,46 @@ def render_kpis(df: pd.DataFrame) -> None:
 
 def render_role_category_chart(df: pd.DataFrame) -> None:
     """Render role category distribution chart."""
-    counts = (
-        df["role_category"]
-        .value_counts()
-        .reset_index()
-    )
-    counts.columns = ["role_category", "offers"]
-
-    fig = px.bar(
-        counts,
-        x="role_category",
-        y="offers",
-        text="offers",
-        title="Distribución de ofertas por categoría de rol",
-        labels={
-            "role_category": "Categoría de rol",
-            "offers": "Número de ofertas",
-        },
-    )
-
+    fig = create_role_category_chart(df)
     st.plotly_chart(fig, width="stretch")
 
 
 def render_work_mode_chart(df: pd.DataFrame) -> None:
     """Render work mode distribution chart."""
-    counts = (
-        df["work_mode"]
-        .value_counts()
-        .reset_index()
-    )
-    counts.columns = ["work_mode", "offers"]
-
-    fig = px.pie(
-        counts,
-        names="work_mode",
-        values="offers",
-        title="Distribución por modalidad de trabajo",
-    )
-
+    fig = create_work_mode_chart(df)
     st.plotly_chart(fig, width="stretch")
 
 
 def render_role_by_work_mode_chart(df: pd.DataFrame) -> None:
     """Render relationship between role category and work mode."""
-    fig = px.histogram(
-        df,
-        x="role_category",
-        color="work_mode",
-        barmode="group",
-        title="Modalidad de trabajo por categoría de rol",
-        labels={
-            "role_category": "Categoría de rol",
-            "work_mode": "Modalidad",
-            "count": "Número de ofertas",
-        },
-    )
-
+    fig = create_role_by_work_mode_chart(df)
     st.plotly_chart(fig, width="stretch")
 
 
 def render_seniority_chart(df: pd.DataFrame) -> None:
     """Render seniority distribution by role category."""
-    fig = px.histogram(
-        df,
-        x="role_category",
-        color="seniority",
-        barmode="group",
-        title="Seniority por categoría de rol",
-        labels={
-            "role_category": "Categoría de rol",
-            "seniority": "Seniority",
-            "count": "Número de ofertas",
-        },
-    )
-
+    fig = create_seniority_chart(df)
     st.plotly_chart(fig, width="stretch")
 
 
 def render_technologies_chart(df: pd.DataFrame) -> None:
     """Render most frequently detected technologies."""
-    technologies = (
-        df.assign(technology=df["technologies_detected"].str.split(", "))
-        .explode("technology")
-    )
+    fig = create_technologies_chart(df)
 
-    technologies["technology"] = technologies["technology"].fillna("").str.strip()
-    technologies = technologies[technologies["technology"] != ""]
-
-    if technologies.empty:
+    if fig is None:
         st.info("No hay tecnologías detectadas con los filtros actuales.")
         return
-
-    counts = (
-        technologies["technology"]
-        .value_counts()
-        .head(15)
-        .reset_index()
-    )
-    counts.columns = ["technology", "mentions"]
-
-    fig = px.bar(
-        counts,
-        x="mentions",
-        y="technology",
-        orientation="h",
-        text="mentions",
-        title="Tecnologías más mencionadas",
-        labels={
-            "technology": "Tecnología",
-            "mentions": "Menciones",
-        },
-    )
-
-    fig.update_layout(yaxis={"categoryorder": "total ascending"})
 
     st.plotly_chart(fig, width="stretch")
 
 
 def render_timeline_chart(df: pd.DataFrame) -> None:
     """Render weekly evolution of job postings."""
-    timeline = df.dropna(subset=["date_posted"]).copy()
+    fig = create_timeline_chart(df)
 
-    if timeline.empty:
+    if fig is None:
         st.info("No hay fechas válidas con los filtros actuales.")
         return
-
-    timeline["week"] = timeline["date_posted"].dt.to_period("W").dt.start_time
-
-    counts = (
-        timeline.groupby("week")
-        .size()
-        .reset_index(name="offers")
-    )
-
-    fig = px.line(
-        counts,
-        x="week",
-        y="offers",
-        markers=True,
-        title="Evolución semanal de ofertas publicadas",
-        labels={
-            "week": "Semana",
-            "offers": "Número de ofertas",
-        },
-    )
 
     st.plotly_chart(fig, width="stretch")
 
@@ -309,17 +213,7 @@ def render_salary_section(df: pd.DataFrame) -> None:
         """
     )
 
-    fig = px.box(
-        salary_df,
-        x="role_category",
-        y="salary_offer_avg",
-        points="all",
-        title="Salario medio ofertado cuando está publicado",
-        labels={
-            "role_category": "Categoría de rol",
-            "salary_offer_avg": "Salario medio ofertado",
-        },
-    )
+    fig = create_salary_box_chart(salary_df)
 
     st.plotly_chart(fig, width="stretch")
 
