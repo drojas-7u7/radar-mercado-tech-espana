@@ -37,6 +37,9 @@ data/interim/*
 
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/job_postings_enriched.csv
+!data/processed/ine_salary_context_processed.csv
+!data/processed/manfred_salary_reference_processed.csv
 
 # Logs
 *.log

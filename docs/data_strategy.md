@@ -131,19 +131,27 @@ Uso metodológico:
 
 Los CSV generados no están versionados en Git por defecto.
 
-La carpeta `data/` conserva solo su estructura mediante archivos `.gitkeep`.
+Como excepción práctica para el despliegue del dashboard, el repositorio incluye únicamente los CSV procesados finales necesarios para ejecutar la aplicación:
+
+- `data/processed/job_postings_enriched.csv`
+- `data/processed/ine_salary_context_processed.csv`
+- `data/processed/manfred_salary_reference_processed.csv`
+
+El resto de datos raw, intermedios o generados durante el proceso siguen excluidos de Git mediante `.gitignore`.
+
+La carpeta `data/` conserva su estructura mediante archivos `.gitkeep`.
 
 Esto permite mantener separadas las siguientes capas:
 
 - datos raw;
 - datos intermedios;
-- datos procesados;
+- datos procesados finales necesarios para despliegue;
 - código fuente;
 - documentación metodológica.
 
-La decisión evita subir al repositorio archivos generados, intermedios o potencialmente pesados.
+La decisión evita subir al repositorio archivos raw, intermedios o potencialmente pesados, pero permite que el dashboard desplegado funcione sin ejecutar scraping ni procesos largos de generación de datos.
 
-Para reproducir el proyecto localmente, los datasets deben generarse mediante los scripts incluidos en el repositorio.
+Para reproducir el proyecto localmente, los datasets pueden regenerarse mediante los scripts incluidos en el repositorio.
 
 ---
 
