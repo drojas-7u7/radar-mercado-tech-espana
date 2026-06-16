@@ -26,11 +26,6 @@ Estado actual:
 - Código modularizado en `src/`.
 - README inicial de entrega documentado.
 
-Pendiente:
-
-- Validación con usuario real no técnico.
-- Preparación de la presentación ejecutiva de 7 minutos.
-
 ## Demo
 
 URL pública del dashboard:
