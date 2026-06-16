@@ -34,6 +34,7 @@ Dashboard interactivo para analizar ofertas tecnológicas publicadas en España 
 | Resumen del proyecto | [Ir a sección](#resumen-del-proyecto) |
 | Estado del proyecto | [Ir a sección](#estado-del-proyecto) |
 | Demo | [Ir a sección](#demo) |
+| Ejecución con Docker | [Ir a sección](#ejecución-con-docker) |
 | Estructura del proyecto | [Ir a sección](#estructura-del-proyecto) |
 | Herramientas utilizadas | [Ir a sección](#herramientas-utilizadas) |
 | Justificación de la herramienta | [Ir a sección](#justificación-de-la-herramienta) |
@@ -77,6 +78,8 @@ Estado actual:
 
 * Dashboard funcional en Streamlit.
 * Dashboard desplegado públicamente en Streamlit Cloud.
+* Ejecución local disponible mediante Docker y Docker Compose.
+* Imagen publicada en Docker Hub como `drojas7u7/radar-mercado-tech-espana:v1.0`.
 * Dataset principal procesado y filtrado a ofertas de 2026.
 * Filtros interactivos.
 * Más de 4 visualizaciones conectadas.
@@ -103,6 +106,48 @@ streamlit run app.py
 
 ---
 
+## Ejecución con Docker
+
+El proyecto también puede ejecutarse mediante Docker. Esta opción permite probar el dashboard en un entorno reproducible sin instalar manualmente las dependencias de Python.
+
+Docker Hub:
+
+```text
+https://hub.docker.com/r/drojas7u7/radar-mercado-tech-espana
+```
+
+Imagen publicada:
+
+```text
+drojas7u7/radar-mercado-tech-espana:v1.0
+```
+
+Comando para descargarla:
+
+```bash
+sudo docker pull drojas7u7/radar-mercado-tech-espana:v1.0
+```
+
+Comando para ejecutarla:
+
+```bash
+sudo docker run --rm -p 8501:8501 drojas7u7/radar-mercado-tech-espana:v1.0
+```
+
+URL local:
+
+```text
+http://localhost:8501/
+```
+
+También puede ejecutarse desde el repositorio con Docker Compose:
+
+```bash
+sudo docker compose up --build
+```
+
+---
+
 ## Estructura del proyecto
 
 A nivel de directorios, el proyecto se organiza de la siguiente manera:
@@ -113,6 +158,9 @@ radar-mercado-tech-espana/
 ├── 📄 README.md                              ← Documentación principal del proyecto
 ├── 📄 requirements.txt                       ← Dependencias necesarias para ejecutar la aplicación
 ├── 📄 .gitignore                             ← Reglas de exclusión para Git
+├── 📄 .dockerignore                          ← Reglas de exclusión para la construcción Docker
+├── 📄 Dockerfile                             ← Imagen reproducible para ejecutar el dashboard
+├── 📄 docker-compose.yml                     ← Ejecución local del dashboard con Docker Compose
 ├── 🚀 app.py                                 ← Aplicación principal de Streamlit
 │
 ├── ⚙️ .streamlit/                            ← Configuración de Streamlit

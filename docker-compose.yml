@@ -1,0 +1,8 @@
+services:
+  dashboard:
+    image: drojas7u7/radar-mercado-tech-espana:v1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
