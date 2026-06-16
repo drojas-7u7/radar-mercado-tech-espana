@@ -12,6 +12,7 @@ from src.processing.dashboard_data import (
     load_manfred_salary_reference_data,
 )
 from src.visualization.dashboard_charts import (
+    create_description_length_distribution_chart,
     create_ine_salary_context_chart,
     create_manfred_salary_reference_chart,
     create_role_by_work_mode_chart,
@@ -364,6 +365,27 @@ def render_timeline_chart(df: pd.DataFrame) -> None:
     st.plotly_chart(fig, width="stretch")
 
 
+def render_description_length_distribution_chart(df: pd.DataFrame) -> None:
+    """Render description length distribution chart."""
+    st.subheader("Distribución estadística del nivel de detalle")
+
+    st.info(
+        """
+        Este gráfico muestra cómo se distribuye la longitud de las descripciones de las ofertas.
+        Ayuda a detectar si la muestra contiene ofertas muy completas, ofertas muy breves o diferencias
+        importantes en el nivel de detalle disponible para el análisis.
+        """
+    )
+
+    fig = create_description_length_distribution_chart(df)
+
+    if fig is None:
+        st.info("No hay datos suficientes para mostrar la distribución de longitud de descripciones.")
+        return
+
+    st.plotly_chart(fig, width="stretch")
+
+
 def render_salary_section(df: pd.DataFrame) -> None:
     """Render salary transparency analysis with limitations."""
     st.subheader("Transparencia salarial")
@@ -613,6 +635,7 @@ def main() -> None:
 
     render_technologies_chart(filtered)
     render_timeline_chart(filtered)
+    render_description_length_distribution_chart(filtered)
     render_salary_section(filtered)
 
     ine_df = (

@@ -149,6 +149,42 @@ def create_timeline_chart(df: pd.DataFrame) -> Figure | None:
     )
 
 
+
+def create_description_length_distribution_chart(df: pd.DataFrame) -> Figure | None:
+    """Create distribution chart for job posting description length."""
+    if "description_length" not in df.columns:
+        return None
+
+    distribution = df.copy()
+    distribution["description_length"] = pd.to_numeric(
+        distribution["description_length"],
+        errors="coerce",
+    )
+    distribution = distribution.dropna(subset=["description_length"])
+    distribution = distribution[distribution["description_length"] > 0]
+
+    if distribution.empty:
+        return None
+
+    fig = px.histogram(
+        distribution,
+        x="description_length",
+        nbins=30,
+        title="¿Cómo se distribuye el nivel de detalle de las ofertas?",
+        labels={
+            "description_length": "Longitud de la descripción de la oferta",
+            "count": "Número de ofertas",
+        },
+    )
+
+    fig.update_layout(
+        xaxis_title="Longitud de la descripción de la oferta",
+        yaxis_title="Número de ofertas",
+    )
+
+    return fig
+
+
 def create_salary_box_chart(salary_df: pd.DataFrame) -> Figure:
     """Create salary box plot for offers with explicitly published salary."""
     return px.box(
