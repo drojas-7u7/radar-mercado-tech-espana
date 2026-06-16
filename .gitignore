@@ -41,5 +41,8 @@ data/processed/*
 # Logs
 *.log
 
-# Streamlit cache
-.streamlit/
+# Streamlit configuration
+.streamlit/*
+!.streamlit/
+!.streamlit/config.toml
+.streamlit/secrets.toml

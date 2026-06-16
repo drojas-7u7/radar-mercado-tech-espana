@@ -57,18 +57,137 @@ def load_manfred_data(path: str) -> pd.DataFrame:
     return load_manfred_salary_reference_data(path)
 
 
-def render_header() -> None:
-    """Render the main dashboard header."""
-    st.title("Radar del Mercado Tecnológico en España")
-    st.subheader("Dashboard interactivo sobre ofertas, perfiles y tecnologías del sector tech")
-
+def render_custom_styles() -> None:
+    """Render lightweight custom CSS for a more polished dashboard."""
     st.markdown(
         """
-        Esta aplicación forma parte del Proyecto II del Módulo II: Análisis y Visualización de Datos.
+        <style>
+            .block-container {
+                padding-top: 2rem;
+                padding-bottom: 3rem;
+            }
 
-        El objetivo es transformar ofertas reales del mercado laboral tecnológico en España en conclusiones
-        claras para una audiencia no técnica.
+            .hero-card {
+                background: linear-gradient(135deg, #0F172A 0%, #1D4ED8 100%);
+                padding: 2.2rem 2.4rem;
+                border-radius: 1.25rem;
+                color: white;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+            }
+
+            .hero-eyebrow {
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
+                font-size: 0.78rem;
+                font-weight: 700;
+                opacity: 0.82;
+                margin-bottom: 0.45rem;
+            }
+
+            .hero-title {
+                font-size: 2.35rem;
+                line-height: 1.12;
+                font-weight: 800;
+                margin-bottom: 0.75rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.05rem;
+                line-height: 1.55;
+                max-width: 880px;
+                opacity: 0.94;
+                margin-bottom: 1.1rem;
+            }
+
+            .hero-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .hero-tag {
+                background: rgba(255, 255, 255, 0.14);
+                border: 1px solid rgba(255, 255, 255, 0.22);
+                border-radius: 999px;
+                padding: 0.32rem 0.75rem;
+                font-size: 0.82rem;
+                font-weight: 600;
+            }
+
+            .section-intro {
+                margin-top: 0.8rem;
+                margin-bottom: 0.9rem;
+            }
+
+            .section-intro h2 {
+                margin-bottom: 0.2rem;
+            }
+
+            .section-intro p {
+                color: #475569;
+                margin-top: 0;
+            }
+
+            .kpi-card {
+                background: #FFFFFF;
+                border: 1px solid #E2E8F0;
+                border-radius: 1rem;
+                padding: 1rem 1.05rem;
+                box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+                min-height: 132px;
+            }
+
+            .kpi-label {
+                color: #64748B;
+                font-size: 0.78rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                margin-bottom: 0.45rem;
+            }
+
+            .kpi-value {
+                color: #0F172A;
+                font-size: 1.85rem;
+                font-weight: 800;
+                line-height: 1.1;
+                margin-bottom: 0.35rem;
+            }
+
+            .kpi-help {
+                color: #475569;
+                font-size: 0.88rem;
+                line-height: 1.35;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_header() -> None:
+    """Render the main dashboard header."""
+    st.markdown(
         """
+        <section class="hero-card">
+            <div class="hero-eyebrow">Proyecto II · Análisis y Visualización de Datos</div>
+            <div class="hero-title">Radar del Mercado Tecnológico en España</div>
+            <div class="hero-subtitle">
+                Dashboard interactivo para explorar ofertas tecnológicas publicadas en España,
+                identificar patrones por rol, modalidad, tecnologías y transparencia salarial,
+                y comunicar conclusiones de forma clara.
+            </div>
+            <div class="hero-tags">
+                <span class="hero-tag">Streamlit</span>
+                <span class="hero-tag">Pandas</span>
+                <span class="hero-tag">Plotly</span>
+                <span class="hero-tag">Tecnoempleo + Ticjob</span>
+                <span class="hero-tag">Contexto INE + Manfred</span>
+            </div>
+        </section>
+        """,
+        unsafe_allow_html=True,
     )
 
 
@@ -136,12 +255,67 @@ def render_kpis(df: pd.DataFrame) -> None:
     remote_or_hybrid = df[df["work_mode"].isin(["remote", "hybrid"])].shape[0]
     salary_available = df[df["salary_data_type"] == "published_in_offer"].shape[0]
 
+    flexible_work_rate = (
+        (remote_or_hybrid / total_offers) * 100
+        if total_offers > 0
+        else 0
+    )
+    salary_transparency_rate = (
+        (salary_available / total_offers) * 100
+        if total_offers > 0
+        else 0
+    )
+
+    st.markdown(
+        """
+        <div class="section-intro">
+            <h2>Resumen ejecutivo</h2>
+            <p>Indicadores principales de la muestra filtrada en el dashboard.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     col1, col2, col3, col4 = st.columns(4)
 
-    col1.metric("Ofertas analizadas", f"{total_offers}")
-    col2.metric("Empresas únicas", f"{total_companies}")
-    col3.metric("Remoto o híbrido", f"{remote_or_hybrid}")
-    col4.metric("Con salario publicado", f"{salary_available}")
+    kpis = [
+        (
+            col1,
+            "Ofertas filtradas",
+            f"{total_offers:,}".replace(",", "."),
+            "Volumen de ofertas tras aplicar los filtros actuales.",
+        ),
+        (
+            col2,
+            "Empresas únicas",
+            f"{total_companies:,}".replace(",", "."),
+            "Número de compañías distintas presentes en la muestra.",
+        ),
+        (
+            col3,
+            "Remoto o híbrido",
+            f"{remote_or_hybrid:,}".replace(",", "."),
+            f"{flexible_work_rate:.1f}% de las ofertas filtradas.",
+        ),
+        (
+            col4,
+            "Salario publicado",
+            f"{salary_available:,}".replace(",", "."),
+            f"{salary_transparency_rate:.1f}% de transparencia salarial.",
+        ),
+    ]
+
+    for column, label, value, help_text in kpis:
+        column.markdown(
+            f"""
+            <div class="kpi-card">
+                <div class="kpi-label">{label}</div>
+                <div class="kpi-value">{value}</div>
+                <div class="kpi-help">{help_text}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 def render_role_category_chart(df: pd.DataFrame) -> None:
@@ -349,6 +523,7 @@ def render_data_table(df: pd.DataFrame) -> None:
 def main() -> None:
     """Run the Streamlit app."""
     configure_page()
+    render_custom_styles()
     render_header()
 
     if not DATA_PATH.exists():
