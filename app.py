@@ -5,8 +5,15 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from src.processing.dashboard_data import apply_dashboard_filters, load_job_postings_data
+from src.processing.dashboard_data import (
+    apply_dashboard_filters,
+    load_ine_salary_context_data,
+    load_job_postings_data,
+    load_manfred_salary_reference_data,
+)
 from src.visualization.dashboard_charts import (
+    create_ine_salary_context_chart,
+    create_manfred_salary_reference_chart,
     create_role_by_work_mode_chart,
     create_role_category_chart,
     create_salary_box_chart,
@@ -18,6 +25,10 @@ from src.visualization.dashboard_charts import (
 
 
 DATA_PATH = Path("data/processed/job_postings_enriched.csv")
+INE_SALARY_CONTEXT_PATH = Path("data/processed/ine_salary_context_processed.csv")
+MANFRED_SALARY_REFERENCE_PATH = Path(
+    "data/processed/manfred_salary_reference_processed.csv"
+)
 
 
 def configure_page() -> None:
@@ -32,6 +43,18 @@ def configure_page() -> None:
 def load_data(path: str) -> pd.DataFrame:
     """Load the processed job postings dataset."""
     return load_job_postings_data(path)
+
+
+@st.cache_data
+def load_ine_data(path: str) -> pd.DataFrame:
+    """Load the processed INE salary context dataset."""
+    return load_ine_salary_context_data(path)
+
+
+@st.cache_data
+def load_manfred_data(path: str) -> pd.DataFrame:
+    """Load the processed Manfred salary reference dataset."""
+    return load_manfred_salary_reference_data(path)
 
 
 def render_header() -> None:
@@ -218,6 +241,67 @@ def render_salary_section(df: pd.DataFrame) -> None:
     st.plotly_chart(fig, width="stretch")
 
 
+def render_external_salary_context_section(
+    ine_df: pd.DataFrame,
+    manfred_df: pd.DataFrame,
+) -> None:
+    """Render external salary context from INE and Manfred."""
+    st.subheader("Contexto salarial externo")
+
+    if ine_df.empty and manfred_df.empty:
+        st.info(
+            """
+            No se han encontrado los datasets externos de contexto salarial.
+            Esta sección se puede regenerar con los scripts de procesamiento correspondientes.
+            """
+        )
+        return
+
+    st.info(
+        """
+        Esta sección añade contexto externo para interpretar mejor la transparencia salarial
+        observada en las ofertas.
+
+        **INE** aporta contexto oficial por rama de actividad, pero no representa salarios
+        tecnológicos por rol.
+
+        **Manfred** aporta una referencia salarial tecnológica por rol y experiencia,
+        pero no representa salarios observados en las ofertas analizadas.
+
+        Estos datos no se usan para rellenar salarios ausentes ni para sustituir los salarios
+        publicados explícitamente en las ofertas.
+        """
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("#### Contexto sectorial oficial — INE")
+        st.caption(
+            "Salario mensual bruto por rama de actividad. Fuente oficial sectorial, no específica por rol tech."
+        )
+
+        ine_fig = create_ine_salary_context_chart(ine_df)
+
+        if ine_fig is None:
+            st.info("No hay datos de INE suficientes para mostrar este gráfico.")
+        else:
+            st.plotly_chart(ine_fig, width="stretch")
+
+    with col2:
+        st.markdown("#### Referencia tecnológica — Manfred")
+        st.caption(
+            "Rangos salariales tecnológicos por rol y experiencia. Referencia externa, no observación de ofertas."
+        )
+
+        manfred_fig = create_manfred_salary_reference_chart(manfred_df)
+
+        if manfred_fig is None:
+            st.info("No hay datos de Manfred suficientes para mostrar este gráfico.")
+        else:
+            st.plotly_chart(manfred_fig, width="stretch")
+
+
 def render_storytelling_notes(df: pd.DataFrame) -> None:
     """Render key interpretation notes for non-technical users."""
     st.subheader("Lectura inicial")
@@ -303,6 +387,19 @@ def main() -> None:
     render_technologies_chart(filtered)
     render_timeline_chart(filtered)
     render_salary_section(filtered)
+
+    ine_df = (
+        load_ine_data(str(INE_SALARY_CONTEXT_PATH))
+        if INE_SALARY_CONTEXT_PATH.exists()
+        else pd.DataFrame()
+    )
+    manfred_df = (
+        load_manfred_data(str(MANFRED_SALARY_REFERENCE_PATH))
+        if MANFRED_SALARY_REFERENCE_PATH.exists()
+        else pd.DataFrame()
+    )
+
+    render_external_salary_context_section(ine_df, manfred_df)
 
     st.divider()
 
