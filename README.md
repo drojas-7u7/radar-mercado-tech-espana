@@ -29,19 +29,26 @@ Dashboard interactivo para analizar ofertas tecnológicas publicadas en España 
 
 ## Contenidos
 
-| Sección | Estado |
+| Sección | Enlace |
 |---------|--------|
-| 1. Resumen del proyecto | Completado |
-| 2. Demo | Completado |
-| 3. Estructura del proyecto | Completado |
-| 4. Herramientas utilizadas | Completado |
-| 5. Fuentes de datos | Completado |
-| 6. Metodología y trazabilidad | Completado |
-| 7. Visualizaciones del dashboard | Completado |
-| 8. Limitaciones y sesgos | Completado |
-| 9. Instalación y ejecución local | Completado |
-| 10. Despliegue | Completado |
-| 11. Próximos pasos | En revisión |
+| Resumen del proyecto | [Ir a sección](#resumen-del-proyecto) |
+| Estado del proyecto | [Ir a sección](#estado-del-proyecto) |
+| Demo | [Ir a sección](#demo) |
+| Estructura del proyecto | [Ir a sección](#estructura-del-proyecto) |
+| Herramientas utilizadas | [Ir a sección](#herramientas-utilizadas) |
+| Justificación de la herramienta | [Ir a sección](#justificación-de-la-herramienta) |
+| Fuentes de datos | [Ir a sección](#fuentes-de-datos) |
+| Importante sobre los datos | [Ir a sección](#importante-sobre-los-datos) |
+| Flujo de generación de datos | [Ir a sección](#flujo-de-generación-de-datos) |
+| Visualizaciones del dashboard | [Ir a sección](#visualizaciones-del-dashboard) |
+| Filtros disponibles | [Ir a sección](#filtros-disponibles) |
+| Lectura de negocio | [Ir a sección](#lectura-de-negocio) |
+| Limitaciones y sesgos | [Ir a sección](#limitaciones-y-sesgos) |
+| Riesgo de uso incorrecto | [Ir a sección](#riesgo-de-uso-incorrecto) |
+| Recomendaciones operativas | [Ir a sección](#recomendaciones-operativas) |
+| Instalación local | [Ir a sección](#instalación-local) |
+| Requisitos | [Ir a sección](#requisitos) |
+| Autor | [Ir a sección](#autor) |
 
 ---
 
@@ -511,25 +518,6 @@ python-dotenv
 ```
 
 Las versiones concretas están fijadas en `requirements.txt`.
-
-## Validación con usuario no técnico
-
-Pendiente.
-
-La validación final deberá comprobar que una persona externa al desarrollo puede:
-
-* entender los KPIs principales;
-* usar los filtros;
-* interpretar al menos 2 o 3 gráficos;
-* comprender las limitaciones y sesgos;
-* explicar con sus palabras una conclusión del dashboard.
-
-## Próximos pasos
-
-* Realizar validación con usuario no técnico.
-* Incorporar mejoras si aparecen durante la validación.
-* Preparar presentación ejecutiva de 7 minutos.
-* Revisar README y documentación final antes de la entrega.
 
 ## Autor
 
