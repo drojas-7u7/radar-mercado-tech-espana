@@ -477,25 +477,77 @@ def render_external_salary_context_section(
 
 
 def render_storytelling_notes(df: pd.DataFrame) -> None:
-    """Render key interpretation notes for non-technical users."""
-    st.subheader("Lectura inicial")
+    """Render executive interpretation, data governance notes and recommendations."""
+    st.subheader("Resumen ejecutivo, sesgos y recomendaciones")
 
-    top_role = df["role_category"].value_counts().idxmax()
-    top_work_mode = df["work_mode"].value_counts().idxmax()
-    salary_missing = df["salary_offer_avg"].isna().sum()
     total_rows = len(df)
+
+    role_counts = df["role_category"].value_counts()
+    work_mode_counts = df["work_mode"].value_counts()
+
+    top_role = role_counts.idxmax()
+    top_role_count = int(role_counts.iloc[0])
+    top_role_rate = (top_role_count / total_rows) * 100 if total_rows else 0
+
+    top_work_mode = work_mode_counts.idxmax()
+    top_work_mode_count = int(work_mode_counts.iloc[0])
+    top_work_mode_rate = (top_work_mode_count / total_rows) * 100 if total_rows else 0
+
+    salary_missing = int(df["salary_offer_avg"].isna().sum())
+    salary_available = max(total_rows - salary_missing, 0)
+    salary_transparency_rate = (
+        (salary_available / total_rows) * 100
+        if total_rows
+        else 0
+    )
+
+    unknown_work_mode = int((df["work_mode"] == "unknown").sum())
+    unknown_seniority = int((df["seniority"] == "unknown").sum())
 
     st.markdown(
         f"""
-        En la muestra filtrada, la categoría con más ofertas es **{top_role}** y la modalidad más frecuente
-        es **{top_work_mode}**.
+        ### Lectura ejecutiva
 
-        El análisis salarial debe interpretarse con cautela: **{salary_missing} de {total_rows} ofertas**
-        no tienen salario medio disponible.
+        Con los filtros actuales, el dashboard analiza **{total_rows} ofertas**.
+        La mayor concentración de demanda aparece en **{top_role}**
+        (**{top_role_count} ofertas**, {top_role_rate:.1f}% de la muestra filtrada).
+        La modalidad más frecuente es **{top_work_mode}**
+        (**{top_work_mode_count} ofertas**, {top_work_mode_rate:.1f}%).
 
-        Esta clasificación de roles y tecnologías se basa en reglas transparentes aplicadas sobre los textos
-        de las ofertas. Por tanto, puede contener errores puntuales, pero permite construir una primera visión
-        exploratoria del mercado.
+        Esta lectura permite identificar rápidamente **qué perfiles tienen más presencia**,
+        **qué modalidades de trabajo dominan** y **qué tecnologías aparecen con más frecuencia**
+        en las ofertas analizadas.
+
+        ### Gobernanza y sesgos del dato
+
+        El dataset debe interpretarse como una **muestra exploratoria del mercado tecnológico en España**,
+        no como una representación completa de todo el mercado laboral.
+
+        Principales alertas metodológicas:
+
+        - La muestra procede de portales concretos de empleo tecnológico, por lo que puede haber
+          **sesgo de fuente**.
+        - La clasificación de perfiles, niveles de experiencia y tecnologías se basa en reglas
+          aplicadas sobre el texto de las ofertas, por lo que puede contener errores puntuales.
+        - **{unknown_work_mode} ofertas** no permiten identificar con claridad la modalidad de trabajo.
+        - **{unknown_seniority} ofertas** no permiten estimar de forma clara el nivel de experiencia.
+        - Solo **{salary_available} de {total_rows} ofertas** publican un salario utilizable
+          ({salary_transparency_rate:.1f}% de transparencia salarial).
+
+        Ignorar estas limitaciones podría llevar a decisiones equivocadas, como sobrevalorar categorías
+        sobrerrepresentadas, interpretar salarios parciales como si fueran representativos o asumir que
+        la ausencia de información equivale a ausencia de demanda.
+
+        ### Recomendaciones operativas
+
+        - Priorizar el análisis de los perfiles con mayor volumen de ofertas antes de tomar decisiones
+          de formación, contratación o posicionamiento profesional.
+        - Usar la modalidad de trabajo como criterio estratégico, especialmente para diferenciar
+          oportunidades remotas, híbridas y presenciales.
+        - Tratar los salarios publicados como indicador de **transparencia salarial**, no como salario
+          medio real del mercado.
+        - Complementar esta muestra con nuevas fuentes o periodos temporales antes de tomar decisiones
+          económicas o estratégicas de alto impacto.
         """
     )
 

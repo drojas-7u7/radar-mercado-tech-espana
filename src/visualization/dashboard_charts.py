@@ -25,10 +25,10 @@ def create_role_category_chart(df: pd.DataFrame) -> Figure:
         x="role_category",
         y="offers",
         text="offers",
-        title="Distribución de ofertas por categoría de rol",
+        title="¿Qué perfiles concentran más demanda?",
         labels={
-            "role_category": "Categoría de rol",
-            "offers": "Número de ofertas",
+            "role_category": "Perfil profesional",
+            "offers": "Ofertas",
         },
     )
 
@@ -46,7 +46,7 @@ def create_work_mode_chart(df: pd.DataFrame) -> Figure:
         counts,
         names="work_mode",
         values="offers",
-        title="Distribución por modalidad de trabajo",
+        title="¿Qué modalidad de trabajo ofrece el mercado?",
     )
 
 
@@ -57,11 +57,11 @@ def create_role_by_work_mode_chart(df: pd.DataFrame) -> Figure:
         x="role_category",
         color="work_mode",
         barmode="group",
-        title="Modalidad de trabajo por categoría de rol",
+        title="¿Dónde hay más opciones de remoto, híbrido o presencial?",
         labels={
-            "role_category": "Categoría de rol",
-            "work_mode": "Modalidad",
-            "count": "Número de ofertas",
+            "role_category": "Perfil profesional",
+            "work_mode": "Modalidad de trabajo",
+            "count": "Ofertas",
         },
     )
 
@@ -73,11 +73,11 @@ def create_seniority_chart(df: pd.DataFrame) -> Figure:
         x="role_category",
         color="seniority",
         barmode="group",
-        title="Seniority por categoría de rol",
+        title="¿Qué nivel de experiencia se pide en cada perfil?",
         labels={
-            "role_category": "Categoría de rol",
-            "seniority": "Seniority",
-            "count": "Número de ofertas",
+            "role_category": "Perfil profesional",
+            "seniority": "Nivel de experiencia",
+            "count": "Ofertas",
         },
     )
 
@@ -109,10 +109,10 @@ def create_technologies_chart(df: pd.DataFrame) -> Figure | None:
         y="technology",
         orientation="h",
         text="mentions",
-        title="Tecnologías más mencionadas",
+        title="¿Qué tecnologías aparecen con más frecuencia?",
         labels={
             "technology": "Tecnología",
-            "mentions": "Menciones",
+            "mentions": "Apariciones en ofertas",
         },
     )
 
@@ -141,10 +141,10 @@ def create_timeline_chart(df: pd.DataFrame) -> Figure | None:
         x="week",
         y="offers",
         markers=True,
-        title="Evolución semanal de ofertas publicadas",
+        title="¿Cómo evoluciona la publicación de ofertas en 2026?",
         labels={
             "week": "Semana",
-            "offers": "Número de ofertas",
+            "offers": "Ofertas",
         },
     )
 
@@ -156,10 +156,10 @@ def create_salary_box_chart(salary_df: pd.DataFrame) -> Figure:
         x="role_category",
         y="salary_offer_avg",
         points="all",
-        title="Salario medio ofertado cuando está publicado",
+        title="¿Qué salarios se publican cuando la oferta los muestra?",
         labels={
-            "role_category": "Categoría de rol",
-            "salary_offer_avg": "Salario medio ofertado",
+            "role_category": "Perfil profesional",
+            "salary_offer_avg": "Salario medio publicado (€)",
         },
     )
 
@@ -203,7 +203,7 @@ def create_ine_salary_context_chart(ine_df: pd.DataFrame) -> Figure | None:
         y="activity_branch_label",
         orientation="h",
         text="salary_monthly_gross_eur",
-        title="Contexto INE: salario mensual bruto por rama de actividad",
+        title="Contexto oficial: comparación salarial por sector",
         labels={
             "salary_monthly_gross_eur": "Salario mensual bruto (€)",
             "activity_branch_label": "Rama de actividad",
@@ -253,7 +253,7 @@ def create_manfred_salary_reference_chart(manfred_df: pd.DataFrame) -> Figure | 
         y="role_name",
         color="experience_range",
         barmode="group",
-        title="Referencia Manfred: salario anual por rol tech y experiencia",
+        title="Referencia tecnológica: salario anual orientativo por rol y experiencia",
         labels={
             "salary_midpoint_eur_year": "Salario anual de referencia (€)",
             "role_name": "Rol",
