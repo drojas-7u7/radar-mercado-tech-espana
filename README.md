@@ -1,34 +1,88 @@
+<div align="center">
+
 # Radar del mercado tech en España
 
-Dashboard interactivo desarrollado con **Streamlit**, **Pandas** y **Plotly** para explorar ofertas de empleo tecnológico en España durante 2026.
+<br>
 
-El proyecto está orientado a un público no técnico y busca responder preguntas de negocio como:
+<span style="font-size: 1.2em;">
+Dashboard interactivo para analizar ofertas tecnológicas publicadas en España durante 2026
+</span>
 
-- qué perfiles tecnológicos concentran más demanda;
-- qué modalidades de trabajo aparecen con más frecuencia;
-- qué tecnologías se mencionan más en las ofertas;
-- qué nivel de experiencia se solicita;
-- cuánta transparencia salarial existe en las ofertas;
-- qué sesgos y limitaciones deben tenerse en cuenta antes de tomar decisiones.
+<br><br>
+
+[Ver dashboard desplegado](https://radar-mercado-tech-espana-t6vqbotubuzgoswrbxhlt9.streamlit.app/) ·
+[Ver repositorio en GitHub](https://github.com/drojas-7u7/radar-mercado-tech-espana) ·
+[Ver estrategia de datos](docs/data_strategy.md)
+
+</div>
+
+---
+
+![Python](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-Análisis%20de%20datos-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![Plotly](https://img.shields.io/badge/Plotly-Gráficos%20interactivos-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-Repositorio-181717?style=for-the-badge&logo=github&logoColor=white)
+![Estado](https://img.shields.io/badge/Estado-Desplegado-success?style=for-the-badge)
+
+---
+
+## Contenidos
+
+| Sección | Estado |
+|---------|--------|
+| 1. Resumen del proyecto | Completado |
+| 2. Demo | Completado |
+| 3. Estructura del proyecto | Completado |
+| 4. Herramientas utilizadas | Completado |
+| 5. Fuentes de datos | Completado |
+| 6. Metodología y trazabilidad | Completado |
+| 7. Visualizaciones del dashboard | Completado |
+| 8. Limitaciones y sesgos | Completado |
+| 9. Instalación y ejecución local | Completado |
+| 10. Despliegue | Completado |
+| 11. Próximos pasos | En revisión |
+
+---
+
+## Resumen del proyecto
+
+**Radar del mercado tech en España** es un dashboard interactivo desarrollado con **Python**, **Streamlit**, **Pandas** y **Plotly** para explorar una muestra de ofertas tecnológicas publicadas en España durante 2026.
+
+El proyecto está orientado a una audiencia no técnica y busca transformar datos de ofertas laborales en una lectura visual, clara y defendible sobre el mercado tecnológico español.
+
+El dashboard permite responder preguntas como:
+
+* Qué perfiles tecnológicos concentran más demanda.
+* Qué modalidades de trabajo aparecen con más frecuencia.
+* Qué tecnologías se mencionan más en las ofertas.
+* Qué nivel de experiencia se solicita.
+* Cuánta transparencia salarial existe en las ofertas.
+* Qué sesgos y limitaciones deben tenerse en cuenta antes de tomar decisiones.
+
+---
 
 ## Estado del proyecto
 
-Proyecto en desarrollo para el **Proyecto II del Módulo II** del bootcamp.
+Proyecto desarrollado para el **Proyecto II del Módulo II** del bootcamp.
 
 Estado actual:
 
-- Dashboard funcional en Streamlit.
-- Dataset principal procesado localmente.
-- Filtros interactivos.
-- Más de 4 visualizaciones conectadas.
-- Storytelling ejecutivo y advertencias metodológicas.
-- Contexto salarial externo mediante INE y Manfred.
-- Código modularizado en `src/`.
-- README inicial de entrega documentado.
+* Dashboard funcional en Streamlit.
+* Dashboard desplegado públicamente en Streamlit Cloud.
+* Dataset principal procesado y filtrado a ofertas de 2026.
+* Filtros interactivos.
+* Más de 4 visualizaciones conectadas.
+* Storytelling ejecutivo y advertencias metodológicas.
+* Contexto salarial externo mediante INE y Manfred.
+* Código modularizado en `src/`.
+* Documentación metodológica en `docs/data_strategy.md`.
+
+---
 
 ## Demo
 
-URL pública del dashboard:
+Dashboard desplegado:
 
 ```text
 https://radar-mercado-tech-espana-t6vqbotubuzgoswrbxhlt9.streamlit.app/
@@ -40,27 +94,63 @@ Ejecución local:
 streamlit run app.py
 ```
 
+---
+
 ## Estructura del proyecto
 
+A nivel de directorios, el proyecto se organiza de la siguiente manera:
+
 ```text
-.
-├── app.py
-├── data
-│   ├── raw
-│   ├── interim
-│   └── processed
-├── docs
-│   └── data_strategy.md
-├── README.md
-├── requirements.txt
-├── src
-│   ├── extraction
-│   ├── features
-│   ├── processing
-│   └── visualization
-└── .streamlit
-    └── config.toml
+radar-mercado-tech-espana/
+│
+├── 📄 README.md                              ← Documentación principal del proyecto
+├── 📄 requirements.txt                       ← Dependencias necesarias para ejecutar la aplicación
+├── 📄 .gitignore                             ← Reglas de exclusión para Git
+├── 🚀 app.py                                 ← Aplicación principal de Streamlit
+│
+├── ⚙️ .streamlit/                            ← Configuración de Streamlit
+│   └── config.toml                           ← Configuración visual de la aplicación
+│
+├── 📁 data/                                  ← Datos del proyecto
+│   ├── raw/                                  ← URLs candidatas y datos originales
+│   │   ├── tecnoempleo_candidate_urls.csv
+│   │   └── ticjob_candidate_urls.csv
+│   │
+│   ├── interim/                              ← Datos intermedios del proceso de extracción
+│   │   ├── job_urls.csv
+│   │   ├── job_postings_normalized.csv
+│   │   ├── job_postings_extraction_errors.csv
+│   │   └── full_job_posting_extraction.log
+│   │
+│   └── processed/                            ← Datos finales usados por el dashboard
+│       ├── job_postings_enriched.csv
+│       ├── ine_salary_context_processed.csv
+│       └── manfred_salary_reference_processed.csv
+│
+├── 📁 docs/                                  ← Documentación metodológica
+│   └── data_strategy.md                      ← Estrategia de datos, fuentes, sesgos y trazabilidad
+│
+└── 📁 src/                                   ← Código fuente modularizado
+    │
+    ├── 📁 extraction/                        ← Extracción de URLs y ofertas laborales
+    │   ├── check_sources.py
+    │   ├── collect_candidate_job_urls.py
+    │   ├── extract_job_postings_from_urls.py
+    │   └── job_posting_extractor.py
+    │
+    ├── 📁 features/                          ← Enriquecimiento y clasificación del dataset
+    │   └── enrich_job_postings.py
+    │
+    ├── 📁 processing/                        ← Preparación, carga y contexto de datos
+    │   ├── dashboard_data.py
+    │   ├── prepare_ine_salary_context.py
+    │   └── prepare_manfred_salary_reference.py
+    │
+    └── 📁 visualization/                     ← Construcción de gráficos interactivos
+        └── dashboard_charts.py
 ```
+
+---
 
 ## Herramientas utilizadas
 
