@@ -11,6 +11,41 @@ import plotly.express as px
 from plotly.graph_objects import Figure
 
 
+SOFT_COLOR_SEQUENCE = [
+    "#6B8FB3",  # soft blue
+    "#8FB996",  # soft green
+    "#D9A66A",  # soft amber
+    "#B7A6C9",  # soft purple
+    "#A8B0B8",  # soft neutral gray
+    "#D98C8C",  # soft coral
+    "#7895A8",  # blue gray
+]
+
+WORK_MODE_COLOR_MAP = {
+    "remote": "#8FB996",
+    "hybrid": "#6B8FB3",
+    "onsite": "#D9A66A",
+    "unknown": "#A8B0B8",
+}
+
+SENIORITY_COLOR_MAP = {
+    "junior": "#8FB996",
+    "mid": "#6B8FB3",
+    "senior": "#B7A6C9",
+    "lead": "#D9A66A",
+    "unknown": "#A8B0B8",
+}
+
+EXPERIENCE_RANGE_COLOR_MAP = {
+    "<2 años": "#8FB996",
+    "2-5 años": "#6B8FB3",
+    "5-10 años": "#B7A6C9",
+}
+
+px.defaults.template = "plotly_white"
+px.defaults.color_discrete_sequence = SOFT_COLOR_SEQUENCE
+
+
 def create_role_category_chart(df: pd.DataFrame) -> Figure:
     """Create role category distribution chart."""
     counts = (
@@ -46,6 +81,8 @@ def create_work_mode_chart(df: pd.DataFrame) -> Figure:
         counts,
         names="work_mode",
         values="offers",
+        color="work_mode",
+        color_discrete_map=WORK_MODE_COLOR_MAP,
         title="¿Qué modalidad de trabajo ofrece el mercado?",
     )
 
@@ -56,6 +93,7 @@ def create_role_by_work_mode_chart(df: pd.DataFrame) -> Figure:
         df,
         x="role_category",
         color="work_mode",
+        color_discrete_map=WORK_MODE_COLOR_MAP,
         barmode="group",
         title="¿Dónde hay más opciones de remoto, híbrido o presencial?",
         labels={
@@ -72,12 +110,16 @@ def create_seniority_chart(df: pd.DataFrame) -> Figure:
         df,
         x="role_category",
         color="seniority",
+        color_discrete_map=SENIORITY_COLOR_MAP,
         barmode="group",
         title="¿Qué nivel de experiencia se pide en cada perfil?",
         labels={
             "role_category": "Perfil profesional",
             "seniority": "Nivel de experiencia",
             "count": "Ofertas",
+        },
+        category_orders={
+            "seniority": ["junior", "mid", "senior", "lead", "unknown"],
         },
     )
 
@@ -288,6 +330,7 @@ def create_manfred_salary_reference_chart(manfred_df: pd.DataFrame) -> Figure | 
         x="salary_midpoint_eur_year",
         y="role_name",
         color="experience_range",
+        color_discrete_map=EXPERIENCE_RANGE_COLOR_MAP,
         barmode="group",
         title="Referencia tecnológica: salario anual orientativo por rol y experiencia",
         labels={
