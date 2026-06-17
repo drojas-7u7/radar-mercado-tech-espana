@@ -34,6 +34,7 @@ Dashboard interactivo para analizar ofertas tecnológicas publicadas en España 
 | Resumen del proyecto | [Ir a sección](#resumen-del-proyecto) |
 | Estado del proyecto | [Ir a sección](#estado-del-proyecto) |
 | Demo | [Ir a sección](#demo) |
+| Versión complementaria en Power BI | [Ir a sección](#versión-complementaria-en-power-bi) |
 | Ejecución con Docker | [Ir a sección](#ejecución-con-docker) |
 | Estructura del proyecto | [Ir a sección](#estructura-del-proyecto) |
 | Herramientas utilizadas | [Ir a sección](#herramientas-utilizadas) |
@@ -80,6 +81,8 @@ Estado actual:
 * Dashboard desplegado públicamente en Streamlit Cloud.
 * Ejecución local disponible mediante Docker y Docker Compose.
 * Imagen publicada en Docker Hub como `drojas7u7/radar-mercado-tech-espana:v1.0`.
+* Versión complementaria en Power BI incluida en `powerbi/`.
+* Demo complementaria de Power BI publicada mediante GitHub Releases.
 * Dataset principal procesado y filtrado a ofertas de 2026.
 * Filtros interactivos.
 * Más de 4 visualizaciones conectadas.
@@ -92,17 +95,52 @@ Estado actual:
 
 ## Demo
 
-Dashboard desplegado:
+Dashboard principal desplegado en Streamlit Cloud:
 
 ```text
 https://radar-mercado-tech-espana-t6vqbotubuzgoswrbxhlt9.streamlit.app/
 ```
 
-Ejecución local:
+Demo complementaria en Power BI:
+
+```text
+https://github.com/drojas-7u7/radar-mercado-tech-espana/releases/tag/powerbi-demo-v1
+```
+
+Ejecución local del dashboard principal:
 
 ```bash
 streamlit run app.py
 ```
+
+---
+
+## Versión complementaria en Power BI
+
+Además del dashboard principal en Streamlit, el proyecto incluye una versión complementaria desarrollada en Power BI.
+
+Esta versión no sustituye a la entrega principal del bootcamp. Su objetivo es servir como recurso adicional de portfolio y practicar una herramienta profesional de BI mediante:
+
+* modelado de datos;
+* relaciones entre tablas;
+* transformación de datos en Power Query;
+* medidas DAX;
+* filtros interactivos;
+* storytelling visual orientado a negocio.
+
+Archivo del informe Power BI:
+
+```text
+powerbi/radar_mercado_tech_espana.pbix
+```
+
+Vídeo demo:
+
+```text
+https://github.com/drojas-7u7/radar-mercado-tech-espana/releases/tag/powerbi-demo-v1
+```
+
+El vídeo se publica mediante GitHub Releases para evitar añadir un archivo de vídeo al historial normal del repositorio.
 
 ---
 
@@ -185,6 +223,9 @@ radar-mercado-tech-espana/
 ├── 📁 docs/                                  ← Documentación metodológica
 │   └── data_strategy.md                      ← Estrategia de datos, fuentes, sesgos y trazabilidad
 │
+├── 📁 powerbi/                               ← Versión complementaria del informe en Power BI
+│   └── radar_mercado_tech_espana.pbix        ← Archivo Power BI del análisis complementario
+│
 └── 📁 src/                                   ← Código fuente modularizado
     │
     ├── 📁 extraction/                        ← Extracción de URLs y ofertas laborales
@@ -212,8 +253,10 @@ radar-mercado-tech-espana/
 * **Python**: lenguaje principal del proyecto.
 * **Pandas**: carga, limpieza, transformación y análisis de datos.
 * **Plotly**: creación de visualizaciones interactivas.
-* **Streamlit**: construcción y despliegue del dashboard.
+* **Streamlit**: construcción y despliegue del dashboard principal.
+* **Power BI**: versión complementaria del informe para portfolio y práctica de BI.
 * **BeautifulSoup / requests / lxml / html5lib**: extracción y procesamiento de fuentes web.
+* **Docker / Docker Compose**: ejecución local reproducible.
 * **Git**: control de versiones.
 
 ## Justificación de la herramienta
@@ -225,6 +268,10 @@ Se utiliza **Streamlit** porque permite construir dashboards interactivos en Pyt
 * facilita filtros interactivos para usuarios no técnicos;
 * permite desplegar el dashboard en la nube;
 * mantiene el proyecto dentro del ecosistema Python trabajado durante el bootcamp.
+
+De forma complementaria, se incluye una versión en **Power BI** como recurso adicional de portfolio. Esta versión permite mostrar el mismo análisis desde una herramienta profesional de BI, trabajando modelado de datos, relaciones, medidas, filtros y storytelling visual.
+
+Power BI no sustituye al dashboard principal en Streamlit ni cambia la metodología del proyecto. Funciona como una extensión profesional para demostrar versatilidad con herramientas de análisis y visualización de datos.
 
 ## Fuentes de datos
 
